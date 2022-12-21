@@ -27,12 +27,12 @@ class ViewController: UIViewController {
         label.font = UIFont(name: "Helvetica", size: 32)
         return label
     }()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
     }
-
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
@@ -55,7 +55,6 @@ class ViewController: UIViewController {
         decimalPoint.setTitle(",", for: .normal)
         decimalPoint.setTitleColor(.black, for: .normal)
         decimalPoint.tag = 11
-        decimalPoint.addTarget(self, action: #selector(zeroPressed), for: .touchUpInside)
         holder.addSubview(decimalPoint)
         
         for x in 0..<3 {
@@ -144,15 +143,18 @@ class ViewController: UIViewController {
     }
     
     @objc func decimalPressed(_ sender: UIButton) {
-        let tag = sender.tag - 1
-
-        if let text = resultLabel.text, resultLabel.text != "0" {
-            resultLabel.text = "\(text)\(tag)"
-        }
+        
     }
     
     @objc func deletePressed(_ sender: UIButton) {
-        
+        if let text = resultLabel.text, text.count > 1, resultLabel.text != "0" {
+            resultLabel.text = String(text.dropLast())
+            firstNumber = Int(text)!
+        } else {
+            resultLabel.text = "0"
+            currentOperaions = nil
+            firstNumber = 0
+        }
     }
     
     @objc func numberPressed(_ sender: UIButton) {
@@ -169,48 +171,59 @@ class ViewController: UIViewController {
         let tag = sender.tag
         
         if let text = resultLabel.text, let value = Int(text), firstNumber == 0 {
-            firstNumber = value
-            resultLabel.text = "0"
+                firstNumber = value
         }
         
         if tag == 1 {
             if let operation = currentOperaions {
                 var secondNumber = 0
+                
                 if let text = resultLabel.text, let value = Int(text) {
                     secondNumber = value
                 }
+                
+                // Equal button pressed
                 switch operation {
                 case .add:
                     let result = firstNumber + secondNumber
                     resultLabel.text = "\(result)"
+                    firstNumber = result
                     break
                     
                 case .subtract:
                     let result = firstNumber - secondNumber
                     resultLabel.text = "\(result)"
+                    firstNumber = result
                     break
                     
                 case .multiply:
                     let result = firstNumber * secondNumber
                     resultLabel.text = "\(result)"
+                    firstNumber = result
                     break
                     
                 case .devide:
                     let result = firstNumber / secondNumber
                     resultLabel.text = "\(result)"
+                    firstNumber = result
                     break
                 }
             }
+            currentOperaions = nil
         } else if tag == 2 {
             currentOperaions = .devide
+            resultLabel.text = ""
         } else if tag == 3 {
             currentOperaions = .multiply
+            resultLabel.text = ""
         } else if tag == 4 {
             currentOperaions = .subtract
+            resultLabel.text = ""
         } else if tag == 5 {
             currentOperaions = .add
+            resultLabel.text = ""
         }
     }
-
+    
 }
 
